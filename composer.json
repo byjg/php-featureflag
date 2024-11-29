@@ -1,0 +1,21 @@
+{
+    "name": "byjg/featureflag",
+    "description": "Allows you to enable or disable features in your application and dispatch the proper code based on the flags.",
+    "autoload": {
+        "psr-4": {
+            "ByJG\\FeatureFlag\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "require": {
+        "php": ">=8.1 <8.4"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5",
+        "vimeo/psalm": "^5.9"
+    }
+}
