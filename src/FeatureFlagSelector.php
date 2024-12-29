@@ -41,9 +41,10 @@ class FeatureFlagSelector
         return new static($callable, $flagName, $flagValue);
     }
 
-    public function stopPropagation(): void
+    public function stopPropagation(): static
     {
         $this->continueProcessing = false;
+        return $this;
     }
 
     public function isContinueProcessing(): bool
