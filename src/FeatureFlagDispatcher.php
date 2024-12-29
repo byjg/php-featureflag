@@ -99,18 +99,18 @@ class FeatureFlagDispatcher
     public function dispatch(...$args): int
     {
         return match ($this->searchOrder) {
-            SearchOrder::Selector => $this->dispatchQuerySelector($this->selectors, false, ...$args),
-            SearchOrder::FeatureFlags => $this->dispatchQueryingFlags(FeatureFlags::getFlags(), $this->selectors, false, ...$args),
-            SearchOrder::Custom => $this->dispatchQueryingFlags($this->limitFlags, $this->selectors, false, ...$args),
+            SearchOrder::Selector => $this->dispatchQuerySelector($this->selectors, true, ...$args),
+            SearchOrder::FeatureFlags => $this->dispatchQueryingFlags(FeatureFlags::getFlags(), $this->selectors, true, ...$args),
+            SearchOrder::Custom => $this->dispatchQueryingFlags($this->limitFlags, $this->selectors, true, ...$args),
             default => 0,
         };
     }
 
-    protected function dispatchQueryingFlags(array $flagList, array $list, bool $isSet, ...$args): int
+    protected function dispatchQueryingFlags(array $flagList, array $selectorList, bool $invoke, ...$args): int
     {
         $count = 0;
         foreach ($flagList as $flagName => $flagValue) {
-            if (!isset($list[$flagName])) {
+            if (!isset($selectorList[$flagName])) {
                 continue;
             }
 
@@ -118,28 +118,11 @@ class FeatureFlagDispatcher
                 continue;
             }
 
-            foreach ($list[$flagName] as $selector) {
-                $match = false;
-                if (is_array($selector)) {
-                    $first = array_shift($selector)[0];
-                    if (!$first->isMatch($flagName, $flagValue)) {
-                        continue;
-                    }
-                    $subCount = $this->dispatchQueryingFlags($flagList, $selector, true, ...$args);
-                    $match = ($subCount === count($selector));
-                    $selector = $first;
-                } else {
-                    $match = $selector->isMatch($flagName, $flagValue);
-                }
-
-                if ($match) {
-                    if (!$isSet) {
-                        $selector->invoke($args);
-                    }
-                    $count++;
-                    if (!$selector->isContinueProcessing()) {
-                        break;
-                    }
+            foreach ($selectorList[$flagName] as $selector) {
+                $result = $this->match($selector, $flagName, $flagValue, $flagList, $invoke, ...$args);
+                $count += abs($result);
+                if ($result < 0) {
+                    break;
                 }
             }
         }
@@ -147,42 +130,70 @@ class FeatureFlagDispatcher
         return $count;
     }
 
-    protected function dispatchQuerySelector(array $list, bool $isSet, ...$args): int
+    protected function dispatchQuerySelector(array $selectorList, bool $invoke, ...$args): int
     {
         $count = 0;
-        foreach ($list as $flagName => $selectors) {
+        foreach ($selectorList as $flagName => $selectors) {
             /** @var FeatureFlagSelector $selector */
             foreach ($selectors as $selector) {
                 if (!FeatureFlags::hasFlag($flagName)) {
                     continue;
                 }
 
-                $match = false;
-                if (is_array($selector)) {
-                    $first = array_shift($selector)[0];
-                    if (!$first->isMatch($flagName, FeatureFlags::getFlag($flagName))) {
-                        continue;
-                    }
-                    $subCount = $this->dispatchQuerySelector($selector, true, ...$args);
-                    $match = ($subCount === count($selector));
-                    $selector = $first;
-                } else {
-                    $match = $selector->isMatch($flagName, FeatureFlags::getFlag($flagName));
-                }
-
-                if ($match) {
-                    if (!$isSet) {
-                        $selector->invoke($args);
-                    }
-                    $count++;
-                    if (!$selector->isContinueProcessing()) {
-                        break;
-                    }
+                $result = $this->match($selector, $flagName, FeatureFlags::getFlag($flagName), [], $invoke, ...$args);
+                $count += abs($result);
+                if ($result < 0) {
+                    break;
                 }
             }
         }
 
         return $count;
+    }
+
+    protected function match(array|FeatureFlagSelector $selector, string $flagName, mixed $flagValue, array $flagList, bool $invoke, mixed ...$args): int
+    {
+        if (is_array($selector)) {
+            return $this->matchSelectorArray($selector, $flagName, $flagValue, $flagList, $invoke, ...$args);
+        }
+
+        return $this->matchSelector($selector, $flagName, $flagValue, $invoke, ...$args);
+    }
+
+    protected function matchSelector(FeatureFlagSelector $selector, string $flagName, mixed $flagValue, bool $invoke, mixed ...$args): int
+    {
+        if ($selector->isMatch($flagName, $flagValue)) {
+            if ($invoke) {
+                $selector->invoke($args);
+            }
+            if (!$selector->isContinueProcessing()) {
+                return -1;
+            }
+            return 1;
+        }
+
+        return 0;
+    }
+
+    protected function matchSelectorArray(array $selector, string $flagName, mixed $flagValue, array $flagList, bool $invoke, mixed ...$args): int
+    {
+        $first = array_shift($selector)[0];
+        if (!$first->isMatch($flagName, $flagValue)) {
+            return 0;
+        }
+        if (empty($flagList)) {
+            $subCount = $this->dispatchQuerySelector($selector, false);
+        } else {
+            $subCount = $this->dispatchQueryingFlags($flagList, $selector, false);
+        }
+        $match = ($subCount === count($selector));
+        $selector = $first;
+
+        if ($match) {
+            return $this->matchSelector($first, $flagName, $flagValue, $invoke, ...$args);
+        }
+
+        return 0;
     }
 
     protected function dispatchQueryCustom(...$args): int
