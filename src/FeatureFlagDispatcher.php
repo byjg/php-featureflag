@@ -120,7 +120,7 @@ class FeatureFlagDispatcher
 
             foreach ($selectorList[$flagName] as $selector) {
                 $result = $this->match($selector, $flagName, $flagValue, $flagList, $invoke, ...$args);
-                $count += abs($result);
+                $count += ($result < 0 ? -$result : $result);
                 if ($result < 0) {
                     break;
                 }
@@ -141,7 +141,7 @@ class FeatureFlagDispatcher
                 }
 
                 $result = $this->match($selector, $flagName, FeatureFlags::getFlag($flagName), [], $invoke, ...$args);
-                $count += abs($result);
+                $count += ($result < 0 ? -$result : $result);
                 if ($result < 0) {
                     break;
                 }
