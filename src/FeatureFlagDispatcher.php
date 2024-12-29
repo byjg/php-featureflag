@@ -186,10 +186,8 @@ class FeatureFlagDispatcher
         } else {
             $subCount = $this->dispatchQueryingFlags($flagList, $selector, false);
         }
-        $match = ($subCount === count($selector));
-        $selector = $first;
 
-        if ($match) {
+        if ($subCount === count($selector)) {
             return $this->matchSelector($first, $flagName, $flagValue, $invoke, ...$args);
         }
 
