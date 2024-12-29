@@ -151,7 +151,7 @@ class FeatureFlagDispatcher
         return $count;
     }
 
-    protected function match(array|FeatureFlagSelector $selector, string $flagName, mixed $flagValue, array $flagList, bool $invoke, mixed ...$args): int
+    protected function match(FeatureFlagSelector|array $selector, string $flagName, mixed $flagValue, array $flagList, bool $invoke, mixed ...$args): int
     {
         if (is_array($selector)) {
             return $this->matchSelectorArray($selector, $flagName, $flagValue, $flagList, $invoke, ...$args);
