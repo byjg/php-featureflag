@@ -25,7 +25,7 @@ class FeatureFlagDispatcherServiceTest extends TestCase
         SampleService::clear();
     }
 
-    public function dataProvider()
+    public static function dataProvider()
     {
         return [
             [SearchOrder::Selector],

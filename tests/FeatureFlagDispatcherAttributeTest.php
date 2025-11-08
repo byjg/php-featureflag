@@ -25,7 +25,7 @@ class FeatureFlagDispatcherAttributeTest extends TestCase
         SampleAttributeService::clear();
     }
 
-    public function dataProvider()
+    public static function dataProvider()
     {
         return [
             [

@@ -22,7 +22,7 @@ class FeatureFlagDispatcherClosureTest extends TestCase
         FeatureFlags::clearFlags();
     }
 
-    public function dataProvider()
+    public static function dataProvider()
     {
         return [
             [SearchOrder::Selector],
