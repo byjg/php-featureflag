@@ -6,6 +6,7 @@ use ByJG\FeatureFlag\SearchOrder;
 use ByJG\FeatureFlag\FeatureFlagDispatcher;
 use ByJG\FeatureFlag\FeatureFlags;
 use ByJG\FeatureFlag\FeatureFlagSelector;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class FeatureFlagDispatcherClosureTest extends TestCase
@@ -30,9 +31,7 @@ class FeatureFlagDispatcherClosureTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider dataProvider
-     */
+    #[DataProvider('dataProvider')]
     public function testDispatchWhenFlagIs(SearchOrder $searchOrder)
     {
         $dispatcher = new FeatureFlagDispatcher();
@@ -54,9 +53,7 @@ class FeatureFlagDispatcherClosureTest extends TestCase
         $this->assertEquals('flag1:value1', $control);
     }
 
-    /**
-     * @dataProvider dataProvider
-     */
+    #[DataProvider('dataProvider')]
     public function testDispatchWhenFlagIsAndNoMatchNoDefault(SearchOrder $searchOrder)
     {
         $dispatcher = new FeatureFlagDispatcher();
@@ -78,9 +75,7 @@ class FeatureFlagDispatcherClosureTest extends TestCase
         $this->assertNull($control);
     }
 
-    /**
-     * @dataProvider dataProvider
-     */
+    #[DataProvider('dataProvider')]
     public function testDispatchWhenFlagIsAndArguments(SearchOrder $searchOrder)
     {
         $dispatcher = new FeatureFlagDispatcher();
@@ -108,9 +103,7 @@ class FeatureFlagDispatcherClosureTest extends TestCase
         $this->assertEquals('flag2:value2:15:30', $control);
     }
 
-    /**
-     * @dataProvider dataProvider
-     */
+    #[DataProvider('dataProvider')]
     public function testDispatchWhenFlagIsSet(SearchOrder $searchOrder)
     {
         $dispatcher = new FeatureFlagDispatcher();
@@ -132,9 +125,7 @@ class FeatureFlagDispatcherClosureTest extends TestCase
         $this->assertEquals('flag1', $control);
     }
 
-    /**
-     * @dataProvider dataProvider
-     */
+    #[DataProvider('dataProvider')]
     public function testDispatchWhenFlagIsSet2(SearchOrder $searchOrder)
     {
         $dispatcher = new FeatureFlagDispatcher();

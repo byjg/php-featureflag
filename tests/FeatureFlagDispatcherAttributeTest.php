@@ -6,6 +6,7 @@ use ByJG\FeatureFlag\SearchOrder;
 use ByJG\FeatureFlag\FeatureFlagDispatcher;
 use ByJG\FeatureFlag\FeatureFlags;
 use ByJG\FeatureFlag\FeatureFlagSelector;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class FeatureFlagDispatcherAttributeTest extends TestCase
@@ -76,9 +77,7 @@ class FeatureFlagDispatcherAttributeTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider dataProvider
-     */
+    #[DataProvider('dataProvider')]
     public function testDispatchWhenFlagIs(SearchOrder $searchOrder, array $custom, array $expected)
     {
         $dispatcher = new FeatureFlagDispatcher();
