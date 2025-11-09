@@ -2,10 +2,11 @@
 
 namespace Tests;
 
-use ByJG\FeatureFlag\SearchOrder;
 use ByJG\FeatureFlag\FeatureFlagDispatcher;
 use ByJG\FeatureFlag\FeatureFlags;
 use ByJG\FeatureFlag\FeatureFlagSelector;
+use ByJG\FeatureFlag\FeatureFlagSelectorSet;
+use ByJG\FeatureFlag\SearchOrder;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -145,4 +146,58 @@ class FeatureFlagDispatcherClosureTest extends TestCase
         $this->assertEquals(1, $count);
         $this->assertEquals('flag3', $control);
     }
+
+    #[DataProvider('dataProvider')]
+    public function testDispatchFlagSetFind(SearchOrder $searchOrder)
+    {
+        $dispatcher = new FeatureFlagDispatcher();
+
+        $control = null;
+
+        $dispatcher->add(
+            FeatureFlagSelectorSet::instance(function () use (&$control) { $control = 'found'; })
+                ->whenFlagIs('flag1', 'value1')
+                ->whenFlagIsSet('flag3')
+        );
+
+        $dispatcher->add(FeatureFlagSelector::whenFlagIsSet('flag4', function () use (&$control) {
+            $control = 'flag4';
+        }));
+
+        $dispatcher->withSearchOrder($searchOrder);
+
+        $count = $dispatcher->dispatch();
+        $this->assertEquals(1, $count);
+        $this->assertEquals('found', $control);
+    }
+
+    #[DataProvider('dataProvider')]
+    public function testDispatchFlagSetFind2(SearchOrder $searchOrder)
+    {
+        $dispatcher = new FeatureFlagDispatcher();
+
+        $control = null;
+
+        $dispatcher->add(
+            FeatureFlagSelectorSet::instance(function () use (&$control) { $control = 'shouldnot'; })
+                ->whenFlagIs('flag1', 'value1')
+                ->whenFlagIsSet('flag4')
+        );
+        $dispatcher->add(
+            FeatureFlagSelectorSet::instance(function () use (&$control) { $control = 'found'; })
+                ->whenFlagIs('flag1', 'value1')
+                ->whenFlagIsSet('flag3')
+        );
+
+        $dispatcher->add(FeatureFlagSelector::whenFlagIsSet('flag4', function () use (&$control) {
+            $control = 'flag4';
+        }));
+
+        $dispatcher->withSearchOrder($searchOrder);
+
+        $count = $dispatcher->dispatch();
+        $this->assertEquals(1, $count);
+        $this->assertEquals('found', $control);
+    }
+
 }

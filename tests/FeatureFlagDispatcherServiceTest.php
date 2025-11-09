@@ -2,10 +2,11 @@
 
 namespace Tests;
 
-use ByJG\FeatureFlag\SearchOrder;
 use ByJG\FeatureFlag\FeatureFlagDispatcher;
 use ByJG\FeatureFlag\FeatureFlags;
 use ByJG\FeatureFlag\FeatureFlagSelector;
+use ByJG\FeatureFlag\FeatureFlagSelectorSet;
+use ByJG\FeatureFlag\SearchOrder;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -106,6 +107,49 @@ class FeatureFlagDispatcherServiceTest extends TestCase
 
         $count = $dispatcher->dispatch($searchOrder);
 
+        $this->assertEquals(1, $count);
+        $this->assertEquals('method2', SampleService::getControl());
+    }
+
+    #[DataProvider('dataProvider')]
+    public function testDispatchFlagSetFind(SearchOrder $searchOrder)
+    {
+        $dispatcher = new FeatureFlagDispatcher();
+
+        $dispatcher->add(
+            FeatureFlagSelectorSet::instance([SampleService::class, 'method1'])
+                ->whenFlagIs('flag1', 'value1')
+                ->whenFlagIsSet('flag3')
+        );
+        $dispatcher->add(FeatureFlagSelector::whenFlagIs('flag4', 'value1', [SampleService::class, 'method2']));
+
+        $dispatcher->withSearchOrder($searchOrder);
+
+        $count = $dispatcher->dispatch();
+        $this->assertEquals(1, $count);
+        $this->assertEquals('method1', SampleService::getControl());
+    }
+
+    #[DataProvider('dataProvider')]
+    public function testDispatchFlagSetFind2(SearchOrder $searchOrder)
+    {
+        $dispatcher = new FeatureFlagDispatcher();
+
+        $dispatcher->add(
+            FeatureFlagSelectorSet::instance([SampleService::class, 'method1'])
+                ->whenFlagIs('flag1', 'value1')
+                ->whenFlagIsSet('flag4')
+        );
+        $dispatcher->add(
+            FeatureFlagSelectorSet::instance([SampleService::class, 'method2'])
+                ->whenFlagIs('flag1', 'value1')
+                ->whenFlagIsSet('flag3')
+        );
+        $dispatcher->add(FeatureFlagSelector::whenFlagIs('flag4', 'value1', [SampleService::class, 'method3']));
+
+        $dispatcher->withSearchOrder($searchOrder);
+
+        $count = $dispatcher->dispatch();
         $this->assertEquals(1, $count);
         $this->assertEquals('method2', SampleService::getControl());
     }

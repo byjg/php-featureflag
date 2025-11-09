@@ -20,5 +20,6 @@ $dispatcher->dispatch();
 
 ## Types of FeatureFlagSelector
 
-- `FeatureFlagSelector::whenFlagIs($flag, $value, $callable)`: Execute the callable when the flag is equal to the value
-- `FeatureFlagSelector::whenFlagIsSet($flag, $callable)`: Execute the callable when the flag is set with any value
+See:
+ - [FeatureFlagSelector](featureflag-selector.md)
+ - [FeatureFlagSelectorSet](featureflag-selectorset.md)
