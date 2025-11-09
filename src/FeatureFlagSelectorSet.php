@@ -5,11 +5,11 @@ namespace ByJG\FeatureFlag;
 class FeatureFlagSelectorSet
 {
     protected array $list = [];
-    protected \Closure|array $callable;
+    protected FeatureFlagHandlerInterface $handler;
 
-    public function __construct(\Closure|array $callable)
+    public function __construct(FeatureFlagHandlerInterface $handler)
     {
-        $this->callable = $callable;
+        $this->handler = $handler;
     }
 
     public function whenFlagIsSet(string $flagName): static
@@ -17,7 +17,7 @@ class FeatureFlagSelectorSet
         if (!isset($this->list[$flagName])) {
             $this->list[$flagName] = [];
         }
-        $this->list[$flagName][] = FeatureFlagSelector::whenFlagIsSet($flagName, $this->callable);
+        $this->list[$flagName][] = FeatureFlagSelector::whenFlagIsSet($flagName, $this->handler);
         return $this;
     }
 
@@ -26,13 +26,13 @@ class FeatureFlagSelectorSet
         if (!isset($this->list[$flagName])) {
             $this->list[$flagName] = [];
         }
-        $this->list[$flagName][] = FeatureFlagSelector::whenFlagIs($flagName, $flagValue, $this->callable);
+        $this->list[$flagName][] = FeatureFlagSelector::whenFlagIs($flagName, $flagValue, $this->handler);
         return $this;
     }
 
-    public static function instance(\Closure|array $callable): static
+    public static function instance(FeatureFlagHandlerInterface $handler): static
     {
-        return new FeatureFlagSelectorSet($callable);
+        return new FeatureFlagSelectorSet($handler);
     }
 
     public function get(): array

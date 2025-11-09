@@ -65,10 +65,12 @@ class FeatureFlagDispatcher
             $featureFlag = $fieldAttribute->getFeatureFlag();
             $featureValue = $fieldAttribute->getFeatureValue();
 
+            $handler = new StaticMethodHandler($className, $property->getName());
+
             if (empty($featureValue)) {
-                $selector = FeatureFlagSelector::whenFlagIsSet($featureFlag, [$className, $property->getName()]);
+                $selector = FeatureFlagSelector::whenFlagIsSet($featureFlag, $handler);
             } else {
-                $selector = FeatureFlagSelector::whenFlagIs($featureFlag, $featureValue, [$className, $property->getName()]);
+                $selector = FeatureFlagSelector::whenFlagIs($featureFlag, $featureValue, $handler);
             }
 
             $this->add($selector);
@@ -164,7 +166,7 @@ class FeatureFlagDispatcher
     {
         if ($selector->isMatch($flagName, $flagValue)) {
             if ($invoke) {
-                $selector->invoke($args);
+                $selector->invoke(...$args);
             }
             if (!$selector->isContinueProcessing()) {
                 return -1;
@@ -205,7 +207,7 @@ class FeatureFlagDispatcher
             $selectors = $this->selectors[$flagName];
             foreach ($selectors as $selector) {
                 if ($selector->isMatch($flagName, FeatureFlags::getFlag($flagName))) {
-                    $selector->invoke($args);
+                    $selector->invoke(...$args);
                     $count++;
                     if (!$selector->isContinueProcessing()) {
                         break;

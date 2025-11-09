@@ -22,6 +22,7 @@ class FeatureFlagDispatcherClosureTest extends TestCase
     public function tearDown(): void
     {
         FeatureFlags::clearFlags();
+        TestHandler::clearControl();
     }
 
     public static function dataProvider()
@@ -37,21 +38,14 @@ class FeatureFlagDispatcherClosureTest extends TestCase
     {
         $dispatcher = new FeatureFlagDispatcher();
 
-        $control = null;
-
-        $dispatcher->add(FeatureFlagSelector::whenFlagIs('flag1', 'value2', function () use (&$control) {
-            $control = 'flag1:value2';
-        }));
-
-        $dispatcher->add(FeatureFlagSelector::whenFlagIs('flag1', 'value1', function () use (&$control) {
-            $control = 'flag1:value1';
-        }));
+        $dispatcher->add(FeatureFlagSelector::whenFlagIs('flag1', 'value2', new TestHandler('flag1:value2')));
+        $dispatcher->add(FeatureFlagSelector::whenFlagIs('flag1', 'value1', new TestHandler('flag1:value1')));
 
         $dispatcher->withSearchOrder($searchOrder);
 
         $count = $dispatcher->dispatch();
         $this->assertEquals(1, $count);
-        $this->assertEquals('flag1:value1', $control);
+        $this->assertEquals('flag1:value1', TestHandler::getControl());
     }
 
     #[DataProvider('dataProvider')]
@@ -59,21 +53,14 @@ class FeatureFlagDispatcherClosureTest extends TestCase
     {
         $dispatcher = new FeatureFlagDispatcher();
 
-        $control = null;
-
-        $dispatcher->add(FeatureFlagSelector::whenFlagIs('flag5', 'value2', function () use (&$control) {
-            $control = 'flag1:value2';
-        }));
-
-        $dispatcher->add(FeatureFlagSelector::whenFlagIs('flag5', 'value1', function () use (&$control) {
-            $control = 'flag1:value1';
-        }));
+        $dispatcher->add(FeatureFlagSelector::whenFlagIs('flag5', 'value2', new TestHandler('flag1:value2')));
+        $dispatcher->add(FeatureFlagSelector::whenFlagIs('flag5', 'value1', new TestHandler('flag1:value1')));
 
         $dispatcher->withSearchOrder($searchOrder);
 
         $count = $dispatcher->dispatch();
         $this->assertEquals(0, $count);
-        $this->assertNull($control);
+        $this->assertNull(TestHandler::getControl());
     }
 
     #[DataProvider('dataProvider')]
@@ -81,27 +68,20 @@ class FeatureFlagDispatcherClosureTest extends TestCase
     {
         $dispatcher = new FeatureFlagDispatcher();
 
-        $control = null;
-
-        $dispatcher->add(FeatureFlagSelector::whenFlagIs('flag2', 'value2', function ($arg1, $arg2) use (&$control) {
-            $control = "flag2:value2:$arg1:$arg2";
-        }));
-
-        $dispatcher->add(FeatureFlagSelector::whenFlagIs('flag2', 'value1', function ($arg1, $arg2) use (&$control) {
-            $control = "flag2:value1:$arg1:$arg2";
-        }));
+        $dispatcher->add(FeatureFlagSelector::whenFlagIs('flag2', 'value2', new TestHandler('flag2:value2')));
+        $dispatcher->add(FeatureFlagSelector::whenFlagIs('flag2', 'value1', new TestHandler('flag2:value1')));
 
         $dispatcher->withSearchOrder($searchOrder);
 
         $count = $dispatcher->dispatch(10, 20);
         $this->assertEquals(1, $count);
-        $this->assertEquals('flag2:value2:10:20', $control);
+        $this->assertEquals('flag2:value2:10:20', TestHandler::getControl());
 
-        $control = null;
+        TestHandler::clearControl();
 
         $count = $dispatcher->dispatch(15, 30);
         $this->assertEquals(1, $count);
-        $this->assertEquals('flag2:value2:15:30', $control);
+        $this->assertEquals('flag2:value2:15:30', TestHandler::getControl());
     }
 
     #[DataProvider('dataProvider')]
@@ -109,21 +89,14 @@ class FeatureFlagDispatcherClosureTest extends TestCase
     {
         $dispatcher = new FeatureFlagDispatcher();
 
-        $control = null;
-
-        $dispatcher->add(FeatureFlagSelector::whenFlagIsSet('flag1', function () use (&$control) {
-            $control = 'flag1';
-        }));
-
-        $dispatcher->add(FeatureFlagSelector::whenFlagIsSet('flag4', function () use (&$control) {
-            $control = 'flag4';
-        }));
+        $dispatcher->add(FeatureFlagSelector::whenFlagIsSet('flag1', new TestHandler('flag1')));
+        $dispatcher->add(FeatureFlagSelector::whenFlagIsSet('flag4', new TestHandler('flag4')));
 
         $dispatcher->withSearchOrder($searchOrder);
 
         $count = $dispatcher->dispatch();
         $this->assertEquals(1, $count);
-        $this->assertEquals('flag1', $control);
+        $this->assertEquals('flag1', TestHandler::getControl());
     }
 
     #[DataProvider('dataProvider')]
@@ -131,20 +104,14 @@ class FeatureFlagDispatcherClosureTest extends TestCase
     {
         $dispatcher = new FeatureFlagDispatcher();
 
-        $control = null;
+        $dispatcher->add(FeatureFlagSelector::whenFlagIsSet('flag4', new TestHandler('flag4')));
+        $dispatcher->add(FeatureFlagSelector::whenFlagIsSet('flag3', new TestHandler('flag3')));
 
-        $dispatcher->add(FeatureFlagSelector::whenFlagIsSet('flag4', function () use (&$control) {
-            $control = 'flag4';
-        }));
+        $dispatcher->withSearchOrder($searchOrder);
 
-        $dispatcher->add(FeatureFlagSelector::whenFlagIsSet('flag3', function () use (&$control) {
-            $control = 'flag3';
-        }));
-
-        $count = $dispatcher->dispatch($searchOrder);
-
+        $count = $dispatcher->dispatch();
         $this->assertEquals(1, $count);
-        $this->assertEquals('flag3', $control);
+        $this->assertEquals('flag3', TestHandler::getControl());
     }
 
     #[DataProvider('dataProvider')]
@@ -152,23 +119,19 @@ class FeatureFlagDispatcherClosureTest extends TestCase
     {
         $dispatcher = new FeatureFlagDispatcher();
 
-        $control = null;
-
         $dispatcher->add(
-            FeatureFlagSelectorSet::instance(function () use (&$control) { $control = 'found'; })
+            FeatureFlagSelectorSet::instance(new TestHandler('found'))
                 ->whenFlagIs('flag1', 'value1')
                 ->whenFlagIsSet('flag3')
         );
 
-        $dispatcher->add(FeatureFlagSelector::whenFlagIsSet('flag4', function () use (&$control) {
-            $control = 'flag4';
-        }));
+        $dispatcher->add(FeatureFlagSelector::whenFlagIsSet('flag4', new TestHandler('flag4')));
 
         $dispatcher->withSearchOrder($searchOrder);
 
         $count = $dispatcher->dispatch();
         $this->assertEquals(1, $count);
-        $this->assertEquals('found', $control);
+        $this->assertEquals('found', TestHandler::getControl());
     }
 
     #[DataProvider('dataProvider')]
@@ -176,28 +139,24 @@ class FeatureFlagDispatcherClosureTest extends TestCase
     {
         $dispatcher = new FeatureFlagDispatcher();
 
-        $control = null;
-
         $dispatcher->add(
-            FeatureFlagSelectorSet::instance(function () use (&$control) { $control = 'shouldnot'; })
+            FeatureFlagSelectorSet::instance(new TestHandler('shouldnot'))
                 ->whenFlagIs('flag1', 'value1')
                 ->whenFlagIsSet('flag4')
         );
         $dispatcher->add(
-            FeatureFlagSelectorSet::instance(function () use (&$control) { $control = 'found'; })
+            FeatureFlagSelectorSet::instance(new TestHandler('found'))
                 ->whenFlagIs('flag1', 'value1')
                 ->whenFlagIsSet('flag3')
         );
 
-        $dispatcher->add(FeatureFlagSelector::whenFlagIsSet('flag4', function () use (&$control) {
-            $control = 'flag4';
-        }));
+        $dispatcher->add(FeatureFlagSelector::whenFlagIsSet('flag4', new TestHandler('flag4')));
 
         $dispatcher->withSearchOrder($searchOrder);
 
         $count = $dispatcher->dispatch();
         $this->assertEquals(1, $count);
-        $this->assertEquals('found', $control);
+        $this->assertEquals('found', TestHandler::getControl());
     }
 
 }

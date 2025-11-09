@@ -40,8 +40,8 @@ class FeatureFlagDispatcherServiceTest extends TestCase
     {
         $dispatcher = new FeatureFlagDispatcher();
 
-        $dispatcher->add(FeatureFlagSelector::whenFlagIs('flag1', 'value2', [SampleService::class, 'method1']));
-        $dispatcher->add(FeatureFlagSelector::whenFlagIs('flag1', 'value1', [SampleService::class, 'method2']));
+        $dispatcher->add(FeatureFlagSelector::whenFlagIs('flag1', 'value2', new SampleService('method1')));
+        $dispatcher->add(FeatureFlagSelector::whenFlagIs('flag1', 'value1', new SampleService('method2')));
 
         $dispatcher->withSearchOrder($searchOrder);
 
@@ -55,11 +55,12 @@ class FeatureFlagDispatcherServiceTest extends TestCase
     {
         $dispatcher = new FeatureFlagDispatcher();
 
-        $dispatcher->add(FeatureFlagSelector::whenFlagIs('flag5', 'value2', [SampleService::class, 'method1']));
-        $dispatcher->add(FeatureFlagSelector::whenFlagIs('flag5', 'value1', [SampleService::class, 'method2']));
+        $dispatcher->add(FeatureFlagSelector::whenFlagIs('flag5', 'value2', new SampleService('method1')));
+        $dispatcher->add(FeatureFlagSelector::whenFlagIs('flag5', 'value1', new SampleService('method2')));
 
-        $count = $dispatcher->dispatch($searchOrder);
+        $dispatcher->withSearchOrder($searchOrder);
 
+        $count = $dispatcher->dispatch();
         $this->assertEquals(0, $count);
         $this->assertNull(SampleService::getControl());
     }
@@ -69,8 +70,8 @@ class FeatureFlagDispatcherServiceTest extends TestCase
     {
         $dispatcher = new FeatureFlagDispatcher();
 
-        $dispatcher->add(FeatureFlagSelector::whenFlagIs('flag2', 'value2', [SampleService::class, 'method3']));
-        $dispatcher->add(FeatureFlagSelector::whenFlagIs('flag2', 'value1', [SampleService::class, 'method4']));
+        $dispatcher->add(FeatureFlagSelector::whenFlagIs('flag2', 'value2', new SampleService('method3')));
+        $dispatcher->add(FeatureFlagSelector::whenFlagIs('flag2', 'value1', new SampleService('method4')));
 
         $count = $dispatcher->dispatch(10, 20);
         $this->assertEquals(1, $count);
@@ -88,11 +89,12 @@ class FeatureFlagDispatcherServiceTest extends TestCase
     {
         $dispatcher = new FeatureFlagDispatcher();
 
-        $dispatcher->add(FeatureFlagSelector::whenFlagIsSet('flag1', [SampleService::class, 'method1']));
-        $dispatcher->add(FeatureFlagSelector::whenFlagIsSet('flag4', [SampleService::class, 'method2']));
+        $dispatcher->add(FeatureFlagSelector::whenFlagIsSet('flag1', new SampleService('method1')));
+        $dispatcher->add(FeatureFlagSelector::whenFlagIsSet('flag4', new SampleService('method2')));
 
-        $count = $dispatcher->dispatch($searchOrder);
+        $dispatcher->withSearchOrder($searchOrder);
 
+        $count = $dispatcher->dispatch();
         $this->assertEquals(1, $count);
         $this->assertEquals('method1', SampleService::getControl());
     }
@@ -102,11 +104,12 @@ class FeatureFlagDispatcherServiceTest extends TestCase
     {
         $dispatcher = new FeatureFlagDispatcher();
 
-        $dispatcher->add(FeatureFlagSelector::whenFlagIsSet('flag4', [SampleService::class, 'method1']));
-        $dispatcher->add(FeatureFlagSelector::whenFlagIsSet('flag3', [SampleService::class, 'method2']));
+        $dispatcher->add(FeatureFlagSelector::whenFlagIsSet('flag4', new SampleService('method1')));
+        $dispatcher->add(FeatureFlagSelector::whenFlagIsSet('flag3', new SampleService('method2')));
 
-        $count = $dispatcher->dispatch($searchOrder);
+        $dispatcher->withSearchOrder($searchOrder);
 
+        $count = $dispatcher->dispatch();
         $this->assertEquals(1, $count);
         $this->assertEquals('method2', SampleService::getControl());
     }
@@ -117,11 +120,11 @@ class FeatureFlagDispatcherServiceTest extends TestCase
         $dispatcher = new FeatureFlagDispatcher();
 
         $dispatcher->add(
-            FeatureFlagSelectorSet::instance([SampleService::class, 'method1'])
+            FeatureFlagSelectorSet::instance(new SampleService('method1'))
                 ->whenFlagIs('flag1', 'value1')
                 ->whenFlagIsSet('flag3')
         );
-        $dispatcher->add(FeatureFlagSelector::whenFlagIs('flag4', 'value1', [SampleService::class, 'method2']));
+        $dispatcher->add(FeatureFlagSelector::whenFlagIs('flag4', 'value1', new SampleService('method2')));
 
         $dispatcher->withSearchOrder($searchOrder);
 
@@ -136,16 +139,16 @@ class FeatureFlagDispatcherServiceTest extends TestCase
         $dispatcher = new FeatureFlagDispatcher();
 
         $dispatcher->add(
-            FeatureFlagSelectorSet::instance([SampleService::class, 'method1'])
+            FeatureFlagSelectorSet::instance(new SampleService('method1'))
                 ->whenFlagIs('flag1', 'value1')
                 ->whenFlagIsSet('flag4')
         );
         $dispatcher->add(
-            FeatureFlagSelectorSet::instance([SampleService::class, 'method2'])
+            FeatureFlagSelectorSet::instance(new SampleService('method2'))
                 ->whenFlagIs('flag1', 'value1')
                 ->whenFlagIsSet('flag3')
         );
-        $dispatcher->add(FeatureFlagSelector::whenFlagIs('flag4', 'value1', [SampleService::class, 'method3']));
+        $dispatcher->add(FeatureFlagSelector::whenFlagIs('flag4', 'value1', new SampleService('method3')));
 
         $dispatcher->withSearchOrder($searchOrder);
 
