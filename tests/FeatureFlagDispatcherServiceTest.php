@@ -6,6 +6,7 @@ use ByJG\FeatureFlag\SearchOrder;
 use ByJG\FeatureFlag\FeatureFlagDispatcher;
 use ByJG\FeatureFlag\FeatureFlags;
 use ByJG\FeatureFlag\FeatureFlagSelector;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class FeatureFlagDispatcherServiceTest extends TestCase
@@ -25,7 +26,7 @@ class FeatureFlagDispatcherServiceTest extends TestCase
         SampleService::clear();
     }
 
-    public function dataProvider()
+    public static function dataProvider()
     {
         return [
             [SearchOrder::Selector],
@@ -33,9 +34,7 @@ class FeatureFlagDispatcherServiceTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider dataProvider
-     */
+    #[DataProvider('dataProvider')]
     public function testDispatchWhenFlagIs(SearchOrder $searchOrder)
     {
         $dispatcher = new FeatureFlagDispatcher();
@@ -50,9 +49,7 @@ class FeatureFlagDispatcherServiceTest extends TestCase
         $this->assertEquals('method2', SampleService::getControl());
     }
 
-    /**
-     * @dataProvider dataProvider
-     */
+    #[DataProvider('dataProvider')]
     public function testDispatchWhenFlagIsAndNoMatchNoDefault(SearchOrder $searchOrder)
     {
         $dispatcher = new FeatureFlagDispatcher();
@@ -66,9 +63,7 @@ class FeatureFlagDispatcherServiceTest extends TestCase
         $this->assertNull(SampleService::getControl());
     }
 
-    /**
-     * @dataProvider dataProvider
-     */
+    #[DataProvider('dataProvider')]
     public function testDispatchWhenFlagIsAndArguments(SearchOrder $searchOrder)
     {
         $dispatcher = new FeatureFlagDispatcher();
@@ -87,9 +82,7 @@ class FeatureFlagDispatcherServiceTest extends TestCase
         $this->assertEquals('method3:15:30', SampleService::getControl());
     }
 
-    /**
-     * @dataProvider dataProvider
-     */
+    #[DataProvider('dataProvider')]
     public function testDispatchWhenFlagIsSet(SearchOrder $searchOrder)
     {
         $dispatcher = new FeatureFlagDispatcher();
@@ -103,9 +96,7 @@ class FeatureFlagDispatcherServiceTest extends TestCase
         $this->assertEquals('method1', SampleService::getControl());
     }
 
-    /**
-     * @dataProvider dataProvider
-     */
+    #[DataProvider('dataProvider')]
     public function testDispatchWhenFlagIsSet2(SearchOrder $searchOrder)
     {
         $dispatcher = new FeatureFlagDispatcher();

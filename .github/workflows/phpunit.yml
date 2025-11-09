@@ -3,11 +3,13 @@ on:
   push:
     branches:
       - master
+      - "6.0"
     tags:
       - "*.*.*"
   pull_request:
     branches:
       - master
+      - "6.0"
 
 jobs:
   Build:
@@ -16,6 +18,7 @@ jobs:
     strategy:
       matrix:
         php-version:
+          - "8.4"
           - "8.3"
           - "8.2"
           - "8.1"
@@ -33,5 +36,6 @@ jobs:
     with:
       folder: php
       project: ${{ github.event.repository.name }}
-    secrets: inherit
+    secrets:
+      DOC_TOKEN: ${{ secrets.DOC_TOKEN }}
 
