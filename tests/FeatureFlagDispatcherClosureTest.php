@@ -2,11 +2,11 @@
 
 namespace Tests;
 
-use ByJG\FeatureFlag\FeatureFlagSelectorSet;
-use ByJG\FeatureFlag\SearchOrder;
 use ByJG\FeatureFlag\FeatureFlagDispatcher;
 use ByJG\FeatureFlag\FeatureFlags;
 use ByJG\FeatureFlag\FeatureFlagSelector;
+use ByJG\FeatureFlag\FeatureFlagSelectorSet;
+use ByJG\FeatureFlag\SearchOrder;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -147,9 +147,7 @@ class FeatureFlagDispatcherClosureTest extends TestCase
         $this->assertEquals('flag3', $control);
     }
 
-    /**
-     * @dataProvider dataProvider
-     */
+    #[DataProvider('dataProvider')]
     public function testDispatchFlagSetFind(SearchOrder $searchOrder)
     {
         $dispatcher = new FeatureFlagDispatcher();
@@ -173,9 +171,7 @@ class FeatureFlagDispatcherClosureTest extends TestCase
         $this->assertEquals('found', $control);
     }
 
-    /**
-     * @dataProvider dataProvider
-     */
+    #[DataProvider('dataProvider')]
     public function testDispatchFlagSetFind2(SearchOrder $searchOrder)
     {
         $dispatcher = new FeatureFlagDispatcher();
