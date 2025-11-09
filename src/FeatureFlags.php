@@ -2,6 +2,8 @@
 
 namespace ByJG\FeatureFlag;
 
+use Psr\Container\ContainerInterface;
+
 class FeatureFlags
 {
     protected static array $flags = [];
@@ -9,6 +11,13 @@ class FeatureFlags
     public static function addFlag(string $flagName, ?string $flagValue = null): void
     {
         self::$flags[$flagName] = $flagValue;
+    }
+
+    public static function addFromContainer(string $flagName, ContainerInterface $container): void
+    {
+        if ($container->has($flagName)) {
+            self::$flags[$flagName] = $container->get($flagName);
+        }
     }
 
     public static function hasFlag(string $flagName): bool
