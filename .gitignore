@@ -4,4 +4,7 @@
 vendor
 composer.lock
 .phpunit.result.cache
+phpunit.coverage.xml
+phpunit.report.xml
+*.bak
 ignore.php
