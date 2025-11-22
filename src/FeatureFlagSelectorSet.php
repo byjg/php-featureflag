@@ -32,7 +32,7 @@ class FeatureFlagSelectorSet
 
     public static function instance(FeatureFlagHandlerInterface $handler): static
     {
-        return new FeatureFlagSelectorSet($handler);
+        return new static($handler);
     }
 
     public function get(): array

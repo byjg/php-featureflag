@@ -49,6 +49,7 @@ class FeatureFlagDispatcher
     }
 
     /**
+     * @param class-string $className
      * @throws ReflectionException
      */
     public function addClass(string $className): void
@@ -179,7 +180,11 @@ class FeatureFlagDispatcher
 
     protected function matchSelectorArray(array $selector, string $flagName, mixed $flagValue, array $flagList, bool $invoke, mixed ...$args): int
     {
-        $first = array_shift($selector)[0];
+        $firstArray = array_shift($selector);
+        if ($firstArray === null || !isset($firstArray[0])) {
+            return 0;
+        }
+        $first = $firstArray[0];
         if (!$first->isMatch($flagName, $flagValue)) {
             return 0;
         }

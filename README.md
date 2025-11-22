@@ -1,5 +1,6 @@
 # FeatureFlag Dispatcher
 
+[![Sponsor](https://img.shields.io/badge/Sponsor-%23ea4aaa?logo=githubsponsors&logoColor=white&labelColor=0d1117)](https://github.com/sponsors/byjg)
 [![Build Status](https://github.com/byjg/uri/actions/workflows/phpunit.yml/badge.svg?branch=master)](https://github.com/byjg/php-featureflag/actions/workflows/phpunit.yml)
 [![Opensource ByJG](https://img.shields.io/badge/opensource-byjg-success.svg)](https://opensource.byjg.com)
 [![GitHub source](https://img.shields.io/badge/Github-source-informational?logo=github)](https://github.com/byjg/php-featureflag/)
@@ -76,7 +77,7 @@ composer require "byjg/featureflag"
 
 ## Requirements
 
-- PHP 8.1 or higher
+- PHP 8.3 to 8.5
 - PSR-11 Container (optional, for container integration)
 
 ## Unit tests
@@ -89,7 +90,7 @@ vendor/bin/phpunit
 
 ```mermaid
 flowchart TD
-    byjg/featureflag --> php8.1+
+    byjg/featureflag --> php8.3-8.5
     byjg/featureflag --> psr/container
 ```
 
