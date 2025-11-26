@@ -83,7 +83,7 @@ composer require "byjg/featureflag"
 ## Unit tests
 
 ```bash
-vendor/bin/phpunit
+composer test
 ```
 
 ## Dependencies
