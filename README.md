@@ -1,4 +1,10 @@
+---
+tags: [php]
+---
+
 # FeatureFlag Dispatcher
+
+A simple feature flag dispatcher that allows conditional code execution based on enabled feature flags.
 
 [![Sponsor](https://img.shields.io/badge/Sponsor-%23ea4aaa?logo=githubsponsors&logoColor=white&labelColor=0d1117)](https://github.com/sponsors/byjg)
 [![Build Status](https://github.com/byjg/uri/actions/workflows/phpunit.yml/badge.svg?branch=master)](https://github.com/byjg/php-featureflag/actions/workflows/phpunit.yml)
@@ -6,8 +12,6 @@
 [![GitHub source](https://img.shields.io/badge/Github-source-informational?logo=github)](https://github.com/byjg/php-featureflag/)
 [![GitHub license](https://img.shields.io/github/license/byjg/php-featureflag.svg)](https://opensource.byjg.com/opensource/licensing.html)
 [![GitHub release](https://img.shields.io/github/release/byjg/php-featureflag.svg)](https://github.com/byjg/php-featureflag/releases/)
-
-A simple feature flag dispatcher that allows conditional code execution based on enabled feature flags.
 
 Feature flags are a powerful technique for managing features in your application, enabling you to toggle functionality
 on/off without deploying new code. This library provides a clean, interface-based approach to dispatch handlers based on
@@ -56,18 +60,18 @@ added.
 
 ## Handler Types
 
-- [Handler Interface](docs/handler-interface.md) - Create custom handlers implementing `FeatureFlagHandlerInterface`
-- [Attributes](docs/attribute-dispatchers.md) - Use PHP 8 attributes to mark methods as handlers
+- [Handler Interface](handler-interface) - Create custom handlers implementing `FeatureFlagHandlerInterface`
+- [Attributes](attribute-dispatchers) - Use PHP 8 attributes to mark methods as handlers
 
 ## Selector Types
 
-- [FeatureFlagSelector](docs/featureflag-selector.md) - Single condition selectors
-- [FeatureFlagSelectorSet](docs/featureflag-selectorset.md) - Multiple condition selectors (ALL must match)
+- [FeatureFlagSelector](featureflag-selector) - Single condition selectors
+- [FeatureFlagSelectorSet](featureflag-selectorset) - Multiple condition selectors (ALL must match)
 
 ## Advanced Usage
 
-- [Search Order](docs/search-order.md) - Control the order of handler execution
-- [Passing Arguments](docs/passing-arguments.md) - Pass runtime arguments to handlers
+- [Search Order](search-order) - Control the order of handler execution
+- [Passing Arguments](passing-arguments) - Pass runtime arguments to handlers
 
 ## Install
 
