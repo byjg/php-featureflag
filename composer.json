@@ -1,6 +1,7 @@
 {
     "name": "byjg/featureflag",
     "description": "Allows you to enable or disable features in your application and dispatch the proper code based on the flags.",
+    "license": "MIT",
     "autoload": {
         "psr-4": {
             "ByJG\\FeatureFlag\\": "src/"
@@ -15,16 +16,14 @@
   "minimum-stability": "dev",
     "scripts": {
         "test": "vendor/bin/phpunit",
-      "psalm": [
-      "@composer --working-dir=tools/psalm update --no-interaction",
-      "tools/psalm/vendor/bin/psalm --threads=1"
-    ]
+      "psalm": "vendor/bin/psalm.phar"
     },
     "require": {
       "php": ">=8.3 <8.7",
       "psr/container": "^1.0|^2.0|^3.0"
     },
     "require-dev": {
-      "phpunit/phpunit": "^12.5"
+      "phpunit/phpunit": "^12.5",
+      "psalm/phar": "^6.16"
     }
 }
