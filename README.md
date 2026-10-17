@@ -60,6 +60,23 @@ If one or more feature flags match the condition, **all matching handlers will b
 added.
 :::
 
+## Managing the Flags
+
+`FeatureFlags` keeps the enabled flags in a static list shared by every dispatcher:
+
+```php
+use ByJG\FeatureFlag\FeatureFlags;
+
+FeatureFlags::addFlag('flag1', 'value1');              // a flag with a value
+FeatureFlags::addFlag('flag3');                        // a flag with no value (null)
+FeatureFlags::addFromContainer('flag4', $container);   // added only if the PSR-11 container has 'flag4'
+
+FeatureFlags::hasFlag('flag1');   // true
+FeatureFlags::getFlag('flag1');   // 'value1'; throws InvalidArgumentException if the flag was not added
+FeatureFlags::getFlags();         // ['flag1' => 'value1', 'flag3' => null, ...]
+FeatureFlags::clearFlags();       // remove every flag
+```
+
 ## Handler Types
 
 - [Handler Interface](docs/handler-interface.md) - Create custom handlers implementing `FeatureFlagHandlerInterface`
@@ -83,7 +100,7 @@ composer require "byjg/featureflag"
 
 ## Requirements
 
-- PHP 8.3 to 8.5
+- PHP 8.3 to 8.6
 - PSR-11 Container (optional, for container integration)
 
 ## Running Tests
