@@ -54,6 +54,9 @@ Creates a selector that executes the handler **only when** the specified flag ha
 $selector = FeatureFlagSelector::whenFlagIs('theme', 'dark', $darkThemeHandler);
 ```
 
+A flag added without a value (`FeatureFlags::addFlag('theme')`) has no value to compare, so it does not match
+`whenFlagIs()`. Use `whenFlagIsSet()` for it.
+
 **Parameters:**
 
 - `$flag` - The feature flag name to check

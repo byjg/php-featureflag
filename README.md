@@ -8,10 +8,11 @@ tags: [php]
 A simple feature flag dispatcher that allows conditional code execution based on enabled feature flags.
 
 [![Sponsor](https://img.shields.io/badge/Sponsor-%23ea4aaa?logo=githubsponsors&logoColor=white&labelColor=0d1117)](https://github.com/sponsors/byjg)
-[![Build Status](https://github.com/byjg/uri/actions/workflows/phpunit.yml/badge.svg?branch=master)](https://github.com/byjg/php-featureflag/actions/workflows/phpunit.yml)
+[![Build Status](https://github.com/byjg/php-featureflag/actions/workflows/phpunit.yml/badge.svg?branch=master)](https://github.com/byjg/php-featureflag/actions/workflows/phpunit.yml)
 [![Opensource ByJG](https://img.shields.io/badge/opensource-byjg-success.svg)](https://opensource.byjg.com)
+[![Install MCP Server](https://img.shields.io/badge/Install-MCP_Server-8A2BE2?logo=modelcontextprotocol&logoColor=white)](https://opensource.byjg.com/docs/ai/mcpserver-byjg-docs/)
 [![GitHub source](https://img.shields.io/badge/Github-source-informational?logo=github)](https://github.com/byjg/php-featureflag/)
-[![GitHub license](https://img.shields.io/github/license/byjg/php-featureflag.svg)](https://opensource.byjg.com/opensource/licensing.html)
+[![GitHub license](https://img.shields.io/github/license/byjg/php-featureflag.svg)](https://opensource.byjg.com/license/)
 [![GitHub release](https://img.shields.io/github/release/byjg/php-featureflag.svg)](https://github.com/byjg/php-featureflag/releases/)
 
 Feature flags are a powerful technique for managing features in your application, enabling you to toggle functionality
@@ -59,6 +60,23 @@ If one or more feature flags match the condition, **all matching handlers will b
 added.
 :::
 
+## Managing the Flags
+
+`FeatureFlags` keeps the enabled flags in a static list shared by every dispatcher:
+
+```php
+use ByJG\FeatureFlag\FeatureFlags;
+
+FeatureFlags::addFlag('flag1', 'value1');              // a flag with a value
+FeatureFlags::addFlag('flag3');                        // a flag with no value (null): only whenFlagIsSet() matches it
+FeatureFlags::addFromContainer('flag4', $container);   // added only if the PSR-11 container has 'flag4'
+
+FeatureFlags::hasFlag('flag1');   // true
+FeatureFlags::getFlag('flag1');   // 'value1'; throws InvalidArgumentException if the flag was not added
+FeatureFlags::getFlags();         // ['flag1' => 'value1', 'flag3' => null, ...]
+FeatureFlags::clearFlags();       // remove every flag
+```
+
 ## Handler Types
 
 - [Handler Interface](docs/handler-interface.md) - Create custom handlers implementing `FeatureFlagHandlerInterface`
@@ -74,7 +92,7 @@ added.
 - [Search Order](docs/search-order.md) - Control the order of handler execution
 - [Passing Arguments](docs/passing-arguments.md) - Pass runtime arguments to handlers
 
-## Install
+## Installation
 
 ```bash
 composer require "byjg/featureflag"
@@ -82,21 +100,13 @@ composer require "byjg/featureflag"
 
 ## Requirements
 
-- PHP 8.3 to 8.5
+- PHP 8.3 to 8.6
 - PSR-11 Container (optional, for container integration)
 
-## Unit tests
+## Running Tests
 
 ```bash
 composer test
-```
-
-## Dependencies
-
-```mermaid
-flowchart TD
-    byjg/featureflag --> php8.3-8.5
-    byjg/featureflag --> psr/container
 ```
 
 ----

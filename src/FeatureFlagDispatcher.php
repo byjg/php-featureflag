@@ -55,7 +55,7 @@ class FeatureFlagDispatcher
     public function addClass(string $className): void
     {
         $reflection = new ReflectionClass($className);
-        foreach ($reflection->getMethods(ReflectionMethod::IS_STATIC | ReflectionMethod::IS_PUBLIC) as $property) {
+        foreach ($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $property) {
             $attributes = $property->getAttributes(FeatureFlagAttribute::class, ReflectionAttribute::IS_INSTANCEOF);
             if (count($attributes) == 0) {
                 continue;
@@ -68,7 +68,7 @@ class FeatureFlagDispatcher
 
             $handler = new StaticMethodHandler($className, $property->getName());
 
-            if (empty($featureValue)) {
+            if ($featureValue === null) {
                 $selector = FeatureFlagSelector::whenFlagIsSet($featureFlag, $handler);
             } else {
                 $selector = FeatureFlagSelector::whenFlagIs($featureFlag, $featureValue, $handler);

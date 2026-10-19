@@ -92,4 +92,27 @@ class FeatureFlagDispatcherAttributeTest extends TestCase
             SampleAttributeService::getControl()
         );
     }
+
+    public static function zeroValueProvider(): array
+    {
+        return [
+            'flag4 is "1"' => ['1', false],
+            'flag4 is "0"' => ['0', true],
+        ];
+    }
+
+    /**
+     * An attribute value of '0' is a value to match, not "flag is set"
+     */
+    #[DataProvider('zeroValueProvider')]
+    public function testAttributeValueZeroMatchesOnlyThatValue(string $flagValue, bool $expected)
+    {
+        FeatureFlags::addFlag('flag4', $flagValue);
+
+        $dispatcher = new FeatureFlagDispatcher();
+        $dispatcher->addClass(SampleAttributeService::class);
+        $dispatcher->dispatch(10, 40);
+
+        $this->assertSame($expected, in_array('method5', SampleAttributeService::getControl()));
+    }
 }
