@@ -32,6 +32,25 @@ class SampleAttributeService
         self::$control[] = "method4:$rg1:$arg2";
     }
 
+    #[FeatureFlagAttribute('flag4', '0')]
+    public function method5(): void
+    {
+        self::$control[] = 'method5';
+    }
+
+    // Not public: must be ignored by addClass(), even though it is static
+    #[FeatureFlagAttribute('flag1', 'value1')]
+    private static function privateStatic(): void
+    {
+        self::$control[] = 'privateStatic';
+    }
+
+    #[FeatureFlagAttribute('flag1', 'value1')]
+    protected static function protectedStatic(): void
+    {
+        self::$control[] = 'protectedStatic';
+    }
+
     public static function clear(): void
     {
         self::$control = [];

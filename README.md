@@ -68,7 +68,7 @@ added.
 use ByJG\FeatureFlag\FeatureFlags;
 
 FeatureFlags::addFlag('flag1', 'value1');              // a flag with a value
-FeatureFlags::addFlag('flag3');                        // a flag with no value (null)
+FeatureFlags::addFlag('flag3');                        // a flag with no value (null): only whenFlagIsSet() matches it
 FeatureFlags::addFromContainer('flag4', $container);   // added only if the PSR-11 container has 'flag4'
 
 FeatureFlags::hasFlag('flag1');   // true

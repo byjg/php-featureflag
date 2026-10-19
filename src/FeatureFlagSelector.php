@@ -64,10 +64,6 @@ class FeatureFlagSelector
             return true;
         }
 
-        if ($flagValue === null) {
-            return true;
-        }
-
         if ($this->flagValue !== $flagValue) {
             return false;
         }

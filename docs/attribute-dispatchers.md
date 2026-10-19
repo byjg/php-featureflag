@@ -49,7 +49,8 @@ The `FeatureFlagAttribute` accepts two parameters:
 ```
 
 - **`$featureFlag`** (required): The name of the feature flag to check
-- **`$featureValue`** (optional): The specific value the flag must have. If omitted, any value will match
+- **`$featureValue`** (optional): The specific value the flag must have. If omitted (`null`), any value will match.
+  Any string, including `'0'` and `''`, must match exactly
 
 ## Adding to the Dispatcher
 
@@ -159,7 +160,7 @@ class PaymentService
 
 - Only public methods can be decorated with `FeatureFlagAttribute`
 - Methods must be either static or have a parameterless constructor for their class
-- Private and protected methods are ignored
+- Private and protected methods are ignored, static or not
 
 ## Best Practices
 

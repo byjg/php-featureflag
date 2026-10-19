@@ -5,7 +5,21 @@
 
 ## Breaking Changes
 
-- None.
+- `FeatureFlagSelector::whenFlagIs()` no longer matches a flag added without a value
+  (`FeatureFlags::addFlag('flag')`, value `null`). It matches the exact value only, as documented; use
+  `whenFlagIsSet()` for a flag without a value. `isMatch($flagName)` called without a value now returns
+  `false` for a `whenFlagIs()` selector.
+- `#[FeatureFlagAttribute('flag', '0')]` (and `''`) now requires that exact value. It was treated as
+  "flag is set" and matched any value.
+
+## Bug Fixes
+
+- `FeatureFlagDispatcher::addClass()` registered private and protected **static** methods carrying
+  `#[FeatureFlagAttribute]`, which then failed with "Call to private method" on dispatch. Only public methods
+  are registered now, as documented.
+- `FeatureFlagSelector::whenFlagIs()` matched a flag that has no value (`null`).
+- `FeatureFlagDispatcher::addClass()` used `empty()` on the attribute value, so `'0'` meant "flag is set".
+  It now checks for `null`.
 
 ## Requirements
 

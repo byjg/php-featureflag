@@ -48,6 +48,23 @@ class FeatureFlagDispatcherClosureTest extends TestCase
         $this->assertEquals('flag1:value1', TestHandler::getControl());
     }
 
+    /**
+     * A flag added without a value is "set", but has no value: whenFlagIs() must not match it
+     */
+    #[DataProvider('dataProvider')]
+    public function testDispatchWhenFlagIsDoesNotMatchFlagWithoutValue(SearchOrder $searchOrder)
+    {
+        $dispatcher = new FeatureFlagDispatcher();
+
+        $dispatcher->add(FeatureFlagSelector::whenFlagIs('flag3', 'value1', new TestHandler('flag3:value1')));
+
+        $dispatcher->withSearchOrder($searchOrder);
+
+        $count = $dispatcher->dispatch();
+        $this->assertEquals(0, $count);
+        $this->assertNull(TestHandler::getControl());
+    }
+
     #[DataProvider('dataProvider')]
     public function testDispatchWhenFlagIsAndNoMatchNoDefault(SearchOrder $searchOrder)
     {
