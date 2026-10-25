@@ -1,5 +1,6 @@
 ---
 sidebar_key: featureflag
+sidebar_category: infrastructure
 tags: [php]
 ---
 
