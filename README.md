@@ -5,7 +5,7 @@ tags: [php]
 
 # FeatureFlag Dispatcher
 
-A simple feature flag dispatcher that allows conditional code execution based on enabled feature flags.
+Run code by feature flag without `if` blocks: register handlers, or mark methods with an attribute, and dispatch.
 
 [![Sponsor](https://img.shields.io/badge/Sponsor-%23ea4aaa?logo=githubsponsors&logoColor=white&labelColor=0d1117)](https://github.com/sponsors/byjg)
 [![Build Status](https://github.com/byjg/php-featureflag/actions/workflows/phpunit.yml/badge.svg?branch=master)](https://github.com/byjg/php-featureflag/actions/workflows/phpunit.yml)
@@ -18,6 +18,30 @@ A simple feature flag dispatcher that allows conditional code execution based on
 Feature flags are a powerful technique for managing features in your application, enabling you to toggle functionality
 on/off without deploying new code. This library provides a clean, interface-based approach to dispatch handlers based on
 feature flag states.
+
+## Why
+
+Feature flags usually end up as `if ($flags->isEnabled('x'))` scattered through the code.
+Each new flag adds branches, and removing a flag means finding every one of them.
+
+FeatureFlag moves the decision to one place, the dispatcher. Each handler, or each method
+marked with an attribute, declares the flag and value it runs for:
+
+```php
+class NotificationService
+{
+    #[FeatureFlagAttribute('email-notifications', 'enabled')]
+    public function sendEmail(string $to, string $subject): void { /* ... */ }
+
+    #[FeatureFlagAttribute('sms-notifications')]
+    public function sendSms(string $to, string $subject): void { /* ... */ }
+}
+
+$dispatcher->addClass(NotificationService::class);
+$dispatcher->dispatch($to, $subject);   // runs only the methods whose flag matches
+```
+
+Turning a feature on or off is a change to the flags, not to the code that uses it.
 
 ## Basic Usage
 
